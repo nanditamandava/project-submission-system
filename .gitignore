@@ -35,3 +35,6 @@ coverage/
 
 # Cache
 .cache/
+
+# Sensitive tokens and temp files
+*.pem
