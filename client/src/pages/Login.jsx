@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { LogIn } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -10,18 +10,28 @@ import Button from '../components/Button';
 export default function Login() {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from?.pathname || '/dashboard';
+  const from = location.state?.from?.pathname;
+
+  if (user) {
+    const defaultRoute = user.role === 'admin' ? '/admin' : '/dashboard';
+    return <Navigate to={from || defaultRoute} replace />;
+  }
 
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      await login(data);
+      const response = await login(data);
       toast.success('Logged in successfully!');
-      navigate(from, { replace: true });
+      
+      const role = response.data?.user?.role || 'user';
+      const defaultRoute = role === 'admin' ? '/admin' : '/dashboard';
+      const redirectPath = from || defaultRoute;
+      
+      navigate(redirectPath, { replace: true });
     } catch (error) {
       toast.error(error.response?.data?.message || 'Login failed. Please try again.');
     } finally {

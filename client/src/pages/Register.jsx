@@ -19,8 +19,7 @@ export default function Register() {
       await register({
         name: data.name,
         email: data.email,
-        password: data.password,
-        role: data.role // Optional: normally role is set by admin, but we'll include it for demo purposes
+        password: data.password
       });
       toast.success('Registration successful!');
       navigate('/dashboard');
@@ -59,7 +58,7 @@ export default function Register() {
             <Input
               label="Email address"
               type="email"
-              {...registerForm('email', { 
+              {...registerForm('email', {
                 required: 'Email is required',
                 pattern: { value: /\S+@\S+\.\S+/, message: 'Invalid email address' }
               })}
@@ -69,7 +68,7 @@ export default function Register() {
             <Input
               label="Password"
               type="password"
-              {...registerForm('password', { 
+              {...registerForm('password', {
                 required: 'Password is required',
                 minLength: { value: 6, message: 'Password must be at least 6 characters' }
               })}
@@ -79,7 +78,7 @@ export default function Register() {
             <Input
               label="Confirm Password"
               type="password"
-              {...registerForm('confirmPassword', { 
+              {...registerForm('confirmPassword', {
                 required: 'Please confirm your password',
                 validate: val => {
                   if (watch('password') != val) {
@@ -90,19 +89,6 @@ export default function Register() {
               error={errors.confirmPassword?.message}
             />
 
-            {/* Optional Role selection for testing */}
-            <div className="w-full">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Role
-              </label>
-              <select 
-                {...registerForm('role')}
-                className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
-              >
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-              </select>
-            </div>
 
             <Button type="submit" className="w-full" isLoading={isLoading}>
               Register

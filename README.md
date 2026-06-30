@@ -4,11 +4,35 @@ A full-stack web application built with the MERN stack (MongoDB, Express, React,
 
 ## 🚀 Features
 
-- **Authentication & Authorization**: Secure JWT-based login, registration, and role-based access control (User vs. Admin).
-- **Project Management**: Admins can create, edit, and assign projects with deadlines and descriptions.
-- **File Uploads**: Students/Users can upload their work securely using drag-and-drop file inputs.
-- **Admin Dashboard**: A comprehensive overview for admins to track project statuses, view users, and download submissions.
-- **User Dashboard**: A personalized view for users to track their active projects and submission deadlines.
+## Features Implemented
+
+### Authentication
+- **User Registration**
+- **User Login**
+- **JWT Authentication**
+- **Refresh Tokens**
+- **bcrypt Password Hashing**
+
+### Authorization
+- **Protected Frontend Routes**
+- **Protected Backend Routes**
+- **Role-Based Access Control**
+
+### Profile Dashboard
+- **View Profile**
+- **Update Profile**
+
+### Project Management
+- **Create Projects**
+- **Update Projects**
+- **Delete Projects**
+- **View Projects**
+
+### File Management
+- **Upload Documentation PDF**
+- **Delete Documentation PDF**
+- **Upload ZIP Submission**
+- **Multiple Submission Support**
 - **Modern UI**: Fully responsive, accessible, and polished interface built with Tailwind CSS v4 and Framer Motion.
 
 ## 🛠️ Technology Stack

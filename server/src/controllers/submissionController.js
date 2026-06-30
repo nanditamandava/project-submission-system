@@ -55,3 +55,39 @@ export const submitProject = async (req, res) => {
         });
     }
 };
+
+// Get Submissions by Project
+export const getSubmissionsByProject = async (req, res) => {
+    try {
+        const { projectId } = req.params;
+        
+        const submissions = await Submission.find({ projectId }).populate('userId', 'name email');
+        
+        return res.status(200).json({
+            success: true,
+            data: submissions
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message || "Server Error"
+        });
+    }
+};
+
+// Get All Submissions (Admin Only)
+export const getAllSubmissions = async (req, res) => {
+    try {
+        const submissions = await Submission.find().populate('userId', 'name email').populate('projectId', 'title');
+        
+        return res.status(200).json({
+            success: true,
+            data: submissions
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message || "Server Error"
+        });
+    }
+};

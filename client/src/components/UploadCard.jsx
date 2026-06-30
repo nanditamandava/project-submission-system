@@ -8,7 +8,8 @@ export default function UploadCard({
   description, 
   accept = "*", 
   onUpload, 
-  isUploading = false 
+  isUploading = false,
+  buttonText = "Upload File"
 }) {
   const [file, setFile] = useState(null);
   const [dragActive, setDragActive] = useState(false);
@@ -44,9 +45,14 @@ export default function UploadCard({
     inputRef.current.click();
   };
 
-  const handleUploadSubmit = () => {
+  const handleUploadSubmit = async () => {
     if (file && onUpload) {
-      onUpload(file);
+      try {
+        await onUpload(file);
+        setFile(null);
+      } catch (error) {
+        // Error is handled by parent, we just prevent clearing the file
+      }
     }
   };
 
@@ -73,6 +79,7 @@ export default function UploadCard({
             className="hidden"
             accept={accept}
             onChange={handleChange}
+            disabled={isUploading}
           />
           <Upload className="h-10 w-10 text-gray-400 mb-3" />
           <p className="text-sm font-medium text-gray-700">Click or drag file to this area to upload</p>
@@ -94,6 +101,7 @@ export default function UploadCard({
               <button 
                 onClick={() => setFile(null)}
                 className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                disabled={isUploading}
               >
                 <X className="h-5 w-5" />
               </button>
@@ -103,9 +111,10 @@ export default function UploadCard({
           <Button 
             onClick={handleUploadSubmit} 
             isLoading={isUploading}
+            disabled={isUploading}
             className="w-full"
           >
-            {isUploading ? 'Uploading...' : 'Upload File'}
+            {isUploading ? 'Uploading...' : buttonText}
           </Button>
         </div>
       )}

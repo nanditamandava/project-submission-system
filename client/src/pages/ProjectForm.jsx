@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { createProject, updateProject, getProjectById } from '../api/projectApi';
+import { getUsers } from '../api/authApi';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/Card';
@@ -14,28 +15,35 @@ export default function ProjectForm() {
   const navigate = useNavigate();
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
   
-  const [isLoading, setIsLoading] = useState(isEditMode);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    if (isEditMode) {
-      const fetchProject = async () => {
-        try {
+    const fetchData = async () => {
+      try {
+        const usersData = await getUsers();
+        setUsers(usersData);
+
+        if (isEditMode) {
           const project = await getProjectById(id);
           // Format date for input field
           if (project.deadline) {
             project.deadline = new Date(project.deadline).toISOString().split('T')[0];
           }
+          if (project.assignedTo) {
+            project.assignedTo = project.assignedTo._id || project.assignedTo;
+          }
           reset(project);
-        } catch (error) {
-          toast.error('Failed to load project details');
-          navigate('/admin/projects');
-        } finally {
-          setIsLoading(false);
         }
-      };
-      fetchProject();
-    }
+      } catch (error) {
+        toast.error('Failed to load data');
+        if (isEditMode) navigate('/admin/projects');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
   }, [id, isEditMode, reset, navigate]);
 
   const onSubmit = async (data) => {
@@ -98,6 +106,26 @@ export default function ProjectForm() {
               {...register('deadline', { required: 'Deadline is required' })}
               error={errors.deadline?.message}
             />
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Assign To User
+              </label>
+              <select
+                {...register('assignedTo', { required: 'Please assign the project to a user' })}
+                className={`block w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-1 ${
+                  errors.assignedTo ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500'
+                }`}
+              >
+                <option value="">Select a user...</option>
+                {users.map((user) => (
+                  <option key={user._id} value={user._id}>
+                    {user.name} ({user.email})
+                  </option>
+                ))}
+              </select>
+              {errors.assignedTo && <p className="mt-1 text-sm text-red-600">{errors.assignedTo.message}</p>}
+            </div>
 
             <div className="flex justify-end space-x-3">
               <Button type="button" variant="ghost" onClick={() => navigate('/admin/projects')}>

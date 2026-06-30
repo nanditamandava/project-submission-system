@@ -1,5 +1,6 @@
 import Project from "../models/Project.js";
 import path from "path";
+import fs from "fs";
 
 // Create Project
 export const createProject = async (req, res) => {
@@ -164,6 +165,46 @@ export const uploadProjectPDF = async (req, res) => {
             data: project
         });
 
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message || "Server Error"
+        });
+    }
+};
+
+// Delete PDF
+export const deleteProjectPDF = async (req, res) => {
+    try {
+        const project = await Project.findById(req.params.id);
+        if (!project) {
+            return res.status(404).json({ success: false, message: "Project not found" });
+        }
+
+        if (!project.documentationPDF) {
+            return res.status(400).json({ success: false, message: "No documentation PDF found to delete" });
+        }
+
+        // Remove from disk
+        // The path is stored as '/uploads/pdfs/filename'
+        const filePath = path.join(process.cwd(), project.documentationPDF);
+        try {
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+            }
+        } catch (err) {
+            console.error("Error deleting file:", err);
+            // We continue to remove it from the DB even if the file is missing from disk
+        }
+
+        project.documentationPDF = null;
+        await project.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Documentation PDF deleted successfully",
+            data: project
+        });
     } catch (error) {
         return res.status(500).json({
             success: false,

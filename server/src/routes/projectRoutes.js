@@ -5,7 +5,8 @@ import {
     getProjectById,
     updateProject,
     deleteProject,
-    uploadProjectPDF
+    uploadProjectPDF,
+    deleteProjectPDF
 } from "../controllers/projectController.js";
 import protect from "../middleware/authMiddleware.js";
 import adminOnly from "../middleware/adminMiddleware.js";
@@ -21,5 +22,6 @@ router.delete("/:id", protect, adminOnly, deleteProject);
 
 // Upload PDF endpoint
 router.post("/:id/upload-pdf", protect, adminOnly, uploadPDF.single("pdf"), uploadProjectPDF);
+router.delete("/:id/documentation", protect, adminOnly, deleteProjectPDF);
 
 export default router;

@@ -2,7 +2,7 @@ import axios from './axios';
 
 export const getSubmissionsByProject = async (projectId) => {
   const response = await axios.get(`/submissions/project/${projectId}`);
-  return response.data;
+  return response.data.data;
 };
 
 export const createSubmission = async (formData) => {
@@ -11,5 +11,10 @@ export const createSubmission = async (formData) => {
       'Content-Type': 'multipart/form-data',
     },
   });
-  return response.data;
+  return response.data.data;
+};
+
+export const getAllSubmissions = async () => {
+  const response = await axios.get('/submissions');
+  return response.data.data;
 };

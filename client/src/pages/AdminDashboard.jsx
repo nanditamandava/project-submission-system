@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getProjects } from '../api/projectApi';
+import { getUsers } from '../api/authApi';
+import { getAllSubmissions } from '../api/submissionApi';
 import ProjectGrid from '../components/ProjectGrid';
 import Loader from '../components/Loader';
 import { Users, Folder, UploadCloud, Plus } from 'lucide-react';
@@ -8,13 +10,22 @@ import { Link } from 'react-router-dom';
 
 export default function AdminDashboard() {
   const [projects, setProjects] = useState([]);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalSubmissions, setTotalSubmissions] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchAdminData = async () => {
       try {
-        const projectsData = await getProjects();
+        const [projectsData, usersData, submissionsData] = await Promise.all([
+          getProjects(),
+          getUsers().catch(() => []),
+          getAllSubmissions().catch(() => [])
+        ]);
+        
         setProjects(projectsData);
+        setTotalUsers(usersData.length);
+        setTotalSubmissions(submissionsData.length);
       } catch (error) {
         toast.error('Failed to load admin dashboard data');
       } finally {
@@ -67,7 +78,7 @@ export default function AdminDashboard() {
               <dl>
                 <dt className="text-sm font-medium text-gray-500 truncate">Total Users</dt>
                 <dd className="flex items-baseline">
-                  <div className="text-2xl font-semibold text-gray-900">--</div>
+                  <div className="text-2xl font-semibold text-gray-900">{totalUsers}</div>
                 </dd>
               </dl>
             </div>
@@ -83,7 +94,7 @@ export default function AdminDashboard() {
               <dl>
                 <dt className="text-sm font-medium text-gray-500 truncate">Submissions</dt>
                 <dd className="flex items-baseline">
-                  <div className="text-2xl font-semibold text-gray-900">--</div>
+                  <div className="text-2xl font-semibold text-gray-900">{totalSubmissions}</div>
                 </dd>
               </dl>
             </div>
